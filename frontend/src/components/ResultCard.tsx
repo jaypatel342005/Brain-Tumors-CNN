@@ -48,25 +48,25 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result, onShowDetails })
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className="flex flex-col w-full h-full"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/10 pb-6 mb-6 gap-4">
-        <div className="flex items-center gap-5">
-          <div className={`p-4 rounded-2xl bg-slate-900 border ${activeResult.color.replace('text-', 'border-').replace('400', '500/30')} shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden group`}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/10 pb-5 sm:pb-6 mb-5 sm:mb-6 gap-4">
+        <div className="flex items-center gap-4 sm:gap-5">
+          <div className={`p-3 sm:p-4 rounded-2xl bg-slate-900 border ${activeResult.color.replace('text-', 'border-').replace('400', '500/30')} shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] relative overflow-hidden group`}>
             <div className={`absolute inset-0 bg-current opacity-10 blur-xl group-hover:opacity-20 transition-opacity ${activeResult.color}`} />
             <div className="relative z-10">{activeResult.icon}</div>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
               className="flex flex-wrap gap-2 mb-1.5"
             >
-              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 text-blue-300 rounded-full text-[9px] sm:text-[10px] font-semibold tracking-wider uppercase border border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.15)]">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_5px_rgba(96,165,250,0.8)]" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 bg-gradient-to-r from-cyan-900/40 to-blue-900/40 text-cyan-300 rounded-full text-[9px] sm:text-[10px] font-semibold tracking-wider uppercase border border-cyan-500/25 shadow-[0_0_10px_rgba(6,182,212,0.15)]">
+                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_5px_rgba(6,182,212,0.8)]" />
                 AI Diagnostics Active
               </span>
             </motion.div>
             <motion.h3 
               initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}
-              className={`text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight ${activeResult.color} filter drop-shadow-[0_0_10px_rgba(255,255,255,0.15)] leading-tight`}
+              className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight ${activeResult.color} filter drop-shadow-[0_0_10px_rgba(255,255,255,0.15)] leading-tight`}
             >
               {activeResult.label}
             </motion.h3>
@@ -93,7 +93,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result, onShowDetails })
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
           }}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-b from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-slate-200 rounded-xl text-sm font-semibold transition-all border border-slate-600 shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] active:scale-95"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-b from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-slate-200 rounded-xl text-sm font-semibold transition-all border border-slate-600 shadow-lg hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] active:scale-95 flex-shrink-0"
         >
           <Download className="w-4 h-4" /> Download Report
         </button>
@@ -101,27 +101,27 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result, onShowDetails })
       
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-        className="bg-black/20 rounded-2xl p-5 mb-5 border border-white/5 relative overflow-hidden"
+        className="bg-black/20 rounded-2xl p-4 sm:p-5 mb-4 sm:mb-5 border border-white/5 relative overflow-hidden"
       >
-        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-400 to-purple-500" />
-        <h4 className="text-[10px] sm:text-xs font-bold text-slate-400 mb-2 uppercase tracking-widest flex items-center gap-2">
+        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-cyan-400 to-blue-500" />
+        <h4 className="text-[10px] sm:text-xs font-bold text-slate-400 mb-2 uppercase tracking-widest flex items-center gap-2 pl-3">
           <CheckCircle2 className="w-3.5 h-3.5" /> Primary Assessment
         </h4>
-        <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light">
+        <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light pl-3">
           {activeResult.description}
         </p>
       </motion.div>
 
       <button 
         onClick={onShowDetails}
-        className="w-full py-3 mb-2 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        className="w-full py-3 mb-2 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700 text-slate-300 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2"
       >
         <Info className="w-4 h-4" /> View AI Confidence Breakdown
       </button>
 
       <motion.div 
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-        className="mt-2 flex items-center gap-2 text-xs text-yellow-500/80 bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20"
+        className="mt-2 flex items-center gap-2 text-xs text-yellow-500/80 bg-yellow-500/10 p-3 rounded-xl border border-yellow-500/20"
       >
         <AlertTriangle className="w-4 h-4 flex-shrink-0" />
         <p>AI predictions are for informational purposes. Always consult a qualified radiologist.</p>
