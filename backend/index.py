@@ -42,11 +42,11 @@ def load_model():
     logger.info(f"Loading model from {MODEL_PATH} on {device}...")
     
     # Model definition matching training setup
-    model = models.efficientnet_v2_s(weights=None)
-    num_ftrs = model.classifier[1].in_features
+    model = models.resnet18(weights=None)
+    num_ftrs = model.fc.in_features
     
     # Custom FC layer
-    model.classifier = nn.Sequential(
+    model.fc = nn.Sequential(
         nn.Linear(num_ftrs, 512),
         nn.ReLU(),
         nn.Dropout(0.5),
@@ -55,11 +55,7 @@ def load_model():
     
     # Load weights
     try:
-        checkpoint = torch.load(MODEL_PATH, map_location=device, weights_only=False)
-        if isinstance(checkpoint, dict) and "state_dict" in checkpoint:
-            model.load_state_dict(checkpoint["state_dict"])
-        else:
-            model.load_state_dict(checkpoint)
+        model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
         model = model.to(device)
         model.eval()
         logger.info("Model loaded successfully.")
@@ -104,61 +100,33 @@ def read_root():
     }
 
 @app.post("/predict")
-@app.post("/api/predict")
+@app.post("/api/predict") # Support both for Vercel mapping
 async def predict(file: UploadFile = File(...)):
-    """
-    Endpoint to predict brain tumor class from an uploaded MRI scan.
-    """
-    # 1. Validate Model Initialization
-    if model_ft is None:
-        logger.error("Inference requested but model is not initialized.")
-        return JSONResponse(status_code=503, content={"error": "Model initialization failed. Please try again later."})
-    
-    # 2. Validate File Content Type
     if not file.content_type.startswith("image/"):
-        logger.warning(f"Invalid file type uploaded: {file.content_type}")
-        return JSONResponse(status_code=400, content={"error": "Invalid file type. Please upload a valid image file (JPEG, PNG)."})
+        return JSONResponse(status_code=400, content={"error": "File provided is not an image."})
+    
+    if model_ft is None:
+        return JSONResponse(status_code=503, content={"error": "Model not initialized."})
     
     try:
-        # 3. Read File Contents
         contents = await file.read()
-        if not contents:
-            logger.warning("Empty file uploaded.")
-            return JSONResponse(status_code=400, content={"error": "The uploaded file is empty."})
-            
-        # 4. Open and Convert Image
-        try:
-            image = Image.open(io.BytesIO(contents)).convert("RGB")
-        except Exception as img_eval_err:
-            logger.error(f"Failed to open image file: {img_eval_err}")
-            return JSONResponse(status_code=400, content={"error": "The uploaded file is corrupted or not a valid image format."})
+        image = Image.open(io.BytesIO(contents)).convert("RGB")
         
-        # 5. Preprocess Image
-        try:
-            input_tensor = transform(image).unsqueeze(0).to(device)
-        except Exception as transform_err:
-            logger.error(f"Error during image tensor transformation: {transform_err}")
-            return JSONResponse(status_code=500, content={"error": "Failed to process image features. Please try a different image."})
+        # Preprocess the image
+        input_tensor = transform(image).unsqueeze(0).to(device)
         
-        # 6. Model Inference
         with torch.no_grad():
             outputs = model_ft(input_tensor)
             probabilities = torch.nn.functional.softmax(outputs, dim=1)[0]
             _, preds = torch.max(outputs, 1)
             
         predicted_class_idx = preds.item()
-        
-        # 7. Validate Output Index
-        if predicted_class_idx < 0 or predicted_class_idx >= len(CLASSES):
-            logger.critical(f"Model predicted out-of-bounds index: {predicted_class_idx}")
-            return JSONResponse(status_code=500, content={"error": "Internal inference calculation error."})
-            
         predicted_class = CLASSES[predicted_class_idx]
         
-        # 8. Calculate Confidences
+        # Calculate percentage confidences
         confidences = {CLASSES[i]: round(probabilities[i].item() * 100, 2) for i in range(len(CLASSES))}
         
-        logger.info(f"Inference successful: {predicted_class} ({confidences[predicted_class]}%)")
+        logger.info(f"Inference complete: {predicted_class} ({confidences[predicted_class]}%)")
         
         return {
             "prediction": predicted_class,
@@ -166,10 +134,9 @@ async def predict(file: UploadFile = File(...)):
             "confidences": confidences,
             "success": True
         }
-        
     except Exception as e:
-        logger.exception(f"Unexpected inference error: {e}")
-        return JSONResponse(status_code=500, content={"error": "An unexpected error occurred during analysis. Please contact support."})
+        logger.error(f"Inference error: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 if __name__ == "__main__":
     import uvicorn
