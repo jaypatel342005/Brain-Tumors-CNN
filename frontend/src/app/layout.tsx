@@ -1,7 +1,13 @@
 import type { Metadata } from 'next'
+import { Outfit } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+
+const outfit = Outfit({ 
+  subsets: ['latin'], 
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -59,7 +65,7 @@ export default function RootLayout({
         <link rel="icon" href="/icon.png" type="image/png" />
         <link rel="apple-touch-icon" href="/icon.png" />
       </head>
-      <body className={`min-h-screen bg-background text-foreground antialiased selection:bg-cyan-500/30 selection:text-cyan-200`}>
+      <body className={`${outfit.className} min-h-screen bg-background text-foreground antialiased selection:bg-cyan-500/30 selection:text-cyan-200`}>
         <Navbar />
         <main className="pt-16 sm:pt-[72px] flex-grow">
           {children}

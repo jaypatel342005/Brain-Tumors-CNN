@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
 
 @theme {
   --color-primary: #06b6d4;
@@ -55,7 +54,6 @@
 /* ─── Body ─── */
 
 body {
-  font-family: "Outfit", sans-serif;
   font-feature-settings: "rlig" 1, "calt" 1;
   background-color: var(--color-background);
   color: var(--color-foreground);
