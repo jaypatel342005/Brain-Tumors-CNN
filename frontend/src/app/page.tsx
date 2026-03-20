@@ -13,8 +13,8 @@ import StatsCounter from "@/components/StatsCounter";
 
 const stats = [
   { value: 4, label: "Tumor Classes" },
-  { value: 18, label: "ResNet Layers" },
-  { value: 224, suffix: "px", label: "Input Size" },
+  { value: 170, label: "EfficientNet Layers" },
+  { value: 384, suffix: "px", label: "Input Size" },
   { value: 98, suffix: "%", label: "Accuracy" },
 ];
 
@@ -30,7 +30,7 @@ const steps = [
     num: "02",
     icon: Cpu,
     title: "AI Analysis",
-    description: "Our fine-tuned ResNet18 model normalizes the tensor and runs inference through deep convolutional layers.",
+    description: "Our fine-tuned EfficientNet-V2-S model normalizes the tensor and runs inference through advanced MBConv layers.",
     color: "blue",
   },
   {
@@ -57,14 +57,14 @@ const features = [
   },
   {
     icon: Network,
-    title: "Skip Connections",
-    description: "ResNet's skip connections solve the vanishing gradient problem, enabling deeper feature extraction from MRI scans.",
+    title: "Fused-MBConv",
+    description: "EfficientNet-V2-S utilizes advanced Fused-MBConv layers and progressive learning, enabling faster and deeper feature extraction.",
     accent: "from-violet-500/20 to-cyan-500/20",
   },
   {
     icon: Microscope,
     title: "Smart Preprocessing",
-    description: "Images are resized to 224×224, normalized with ImageNet mean & std deviation to match the model's training distribution.",
+    description: "Images are resized to 384×384, normalized with ImageNet mean & std deviation to match the model's training distribution.",
     accent: "from-cyan-500/20 to-emerald-500/20",
   },
 ];
@@ -118,7 +118,7 @@ export default function Home() {
 
             <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
               An end-to-end AI pipeline engineered to classify brain MRI scans across 4 categories 
-              using a fine-tuned ResNet18 architecture.
+              using a fine-tuned EfficientNet-V2-S architecture.
             </p>
 
             {/* CTA Buttons */}
@@ -250,7 +250,7 @@ export default function Home() {
               Under the Hood
             </motion.h2>
             <motion.p variants={itemVariants} className="text-slate-400 max-w-xl mx-auto text-base sm:text-lg font-light">
-              A deep dive into the ResNet18 model powering NeuralScan.AI.
+              A deep dive into the EfficientNet-V2-S model powering NeuralScan.AI.
             </motion.p>
           </motion.div>
 
@@ -291,7 +291,7 @@ export default function Home() {
               <div>
                 <h4 className="text-base font-semibold text-slate-100 mb-2">Preprocessing Pipeline</h4>
                 <p className="text-sm text-slate-400 font-light leading-relaxed">
-                  All uploaded scans are resized to <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">224×224</code>, 
+                  All uploaded scans are resized to <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">384×384</code>, 
                   converted to PyTorch Tensors, and normalized using ImageNet mean 
                   <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">[0.485, 0.456, 0.406]</code> and std 
                   <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">[0.229, 0.224, 0.225]</code> to match the training distribution.
@@ -364,7 +364,7 @@ export default function Home() {
               Ready to Analyze?
             </h2>
             <p className="text-slate-400 text-base sm:text-lg mb-8 font-light max-w-lg mx-auto">
-              Upload your brain MRI scan and let our ResNet18 model provide instant classification results.
+              Upload your brain MRI scan and let our EfficientNet-V2-S model provide instant classification results.
             </p>
             <Link
               href="/analyzer"

@@ -17,7 +17,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
-              Advanced deep learning inference for brain tumor MRI classification using fine-tuned ResNet18.
+              Advanced deep learning inference for brain tumor MRI classification using fine-tuned EfficientNet-V2-S.
             </p>
           </div>
 
@@ -44,7 +44,7 @@ export default function Footer() {
             <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Built With</h4>
             <ul className="space-y-2.5 text-sm text-slate-500">
               <li>Next.js 16 & React 19</li>
-              <li>PyTorch & ResNet18</li>
+              <li>PyTorch & EfficientNet-V2-S</li>
               <li>Framer Motion</li>
               <li>Tailwind CSS</li>
             </ul>

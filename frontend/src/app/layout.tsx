@@ -14,10 +14,10 @@ export const metadata: Metadata = {
     default: 'NeuralScan.AI — Brain Tumor Detection with Deep Learning',
     template: '%s | NeuralScan.AI',
   },
-  description: 'NeuralScan.AI uses a fine-tuned ResNet18 deep learning model to classify brain MRI scans into 4 categories: Glioma, Meningioma, Pituitary Tumor, and No Tumor — with high accuracy.',
+  description: 'NeuralScan.AI uses a fine-tuned EfficientNet-V2-S deep learning model to classify brain MRI scans into 4 categories: Glioma, Meningioma, Pituitary Tumor, and No Tumor — with high accuracy.',
   keywords: [
     'brain tumor detection', 'brain tumor classifier', 'MRI classification',
-    'deep learning', 'ResNet18', 'AI medical imaging', 'neural network',
+    'deep learning', 'EfficientNet-V2-S', 'AI medical imaging', 'neural network',
     'brain cancer detection', 'PyTorch', 'image classification',
     'NeuralScan', 'brain MRI analysis', 'tumor prediction',
   ],
@@ -30,12 +30,12 @@ export const metadata: Metadata = {
     locale: 'en_US',
     siteName: 'NeuralScan.AI',
     title: 'NeuralScan.AI — Brain Tumor Detection with Deep Learning',
-    description: 'Upload a brain MRI scan and let our fine-tuned ResNet18 AI model instantly classify tumors across 4 categories with high accuracy.',
+    description: 'Upload a brain MRI scan and let our fine-tuned EfficientNet-V2-S AI model instantly classify tumors across 4 categories with high accuracy.',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'NeuralScan.AI — Brain Tumor Detection with Deep Learning',
-    description: 'Upload a brain MRI scan and let our fine-tuned ResNet18 AI model instantly classify tumors across 4 categories.',
+    description: 'Upload a brain MRI scan and let our fine-tuned EfficientNet-V2-S AI model instantly classify tumors across 4 categories.',
     creator: '@jaypatel342005',
   },
   robots: {

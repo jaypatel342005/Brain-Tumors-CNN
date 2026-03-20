@@ -29,8 +29,8 @@ const skills = [
 const projects = [
   {
     title: "Brain Tumor Detection (This Project)",
-    description: "Deep learning MRI classifier using fine-tuned ResNet18 with Next.js frontend and PyTorch backend.",
-    tags: ["PyTorch", "ResNet18", "Next.js", "Deep Learning"],
+    description: "Deep learning MRI classifier using fine-tuned EfficientNet-V2-S with Next.js frontend and PyTorch backend.",
+    tags: ["PyTorch", "EfficientNet-V2-S", "Next.js", "Deep Learning"],
     url: "https://github.com/jaypatel342005/DL-Project",
     accent: "cyan",
   },

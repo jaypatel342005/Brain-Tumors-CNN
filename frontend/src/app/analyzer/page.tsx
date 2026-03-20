@@ -101,7 +101,7 @@ export default function AnalyzerPage() {
             Diagnostic Interface
           </h1>
           <p className="text-sm sm:text-base text-slate-400 max-w-lg font-light leading-relaxed">
-            Upload an axial, coronal, or sagittal brain MRI scan. Our fine-tuned ResNet18 model will analyze the tensor features.
+            Upload an axial, coronal, or sagittal brain MRI scan. Our fine-tuned EfficientNet-V2-S model will analyze the tensor features.
           </p>
         </motion.div>
 
@@ -258,7 +258,7 @@ export default function AnalyzerPage() {
                   <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                 </div>
                 <span className="ml-4 text-[10px] font-mono text-slate-500 tracking-widest">
-                  ResNet18 Inference Engine v1.0
+                  EfficientNet-V2-S Inference Engine v2.0
                 </span>
               </div>
 
@@ -306,7 +306,7 @@ export default function AnalyzerPage() {
                           {">"} Normalizing Tensor...
                         </p>
                         <p className="animate-pulse" style={{ animationDelay: "1s" }}>
-                          {">"} Feeding ResNet Layers...
+                          {">"} Feeding EfficientNet Layers...
                         </p>
                         <p className="animate-pulse" style={{ animationDelay: "1.5s" }}>
                           {">"} Computing Softmax...

@@ -18,15 +18,16 @@ logger = logging.getLogger(__name__)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Define labels
+# Order restored to the original training mapping since the checkpoint 'categories' was misleading.
 CLASSES = ["notumor", "glioma", "meningioma", "pituitary"]
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "best_model.pth")
+MODEL_PATH = os.path.join(BASE_DIR, "EfficientNet-V2-S.pth")
 
 # Global model variable
 model_ft = None
 
-# Image preprocessing
+# Image preprocessing — EfficientNet-V2-S is trained at 384×384
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -34,31 +35,39 @@ transform = transforms.Compose([
 ])
 
 def load_model():
-    """Loads the fine-tuned ResNet18 model."""
+    """Loads the fine-tuned EfficientNet-V2-S model."""
     if not os.path.exists(MODEL_PATH):
         logger.error(f"Model file not found at {MODEL_PATH}")
         raise FileNotFoundError(f"Model file not found at {MODEL_PATH}")
     
-    logger.info(f"Loading model from {MODEL_PATH} on {device}...")
+    logger.info(f"Loading EfficientNet-V2-S model from {MODEL_PATH} on {device}...")
     
-    # Model definition matching training setup
-    model = models.resnet18(weights=None)
-    num_ftrs = model.fc.in_features
-    
-    # Custom FC layer
-    model.fc = nn.Sequential(
-        nn.Linear(num_ftrs, 512),
+    # Rebuild EfficientNet-V2-S with the exact custom classifier head used in training
+    model = models.efficientnet_v2_s(weights=None)
+
+    # Custom head: Dropout→Linear(1280→512)→ReLU→BN(512)→Dropout→Linear(512→256)→ReLU→BN(256)→Dropout→Linear(256→4)
+    in_features = model.classifier[1].in_features  # 1280
+    model.classifier = nn.Sequential(
+        nn.Dropout(p=0.2),
+        nn.Linear(in_features, 512),
         nn.ReLU(),
-        nn.Dropout(0.5),
-        nn.Linear(512, len(CLASSES))
+        nn.BatchNorm1d(512),
+        nn.Dropout(p=0.3),
+        nn.Linear(512, 256),
+        nn.ReLU(),
+        nn.BatchNorm1d(256),
+        nn.Dropout(p=0.3),
+        nn.Linear(256, len(CLASSES))
     )
-    
-    # Load weights
+
+    # Load weights — checkpoint is a dict, weights are under 'state_dict'
     try:
-        model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+        checkpoint = torch.load(MODEL_PATH, map_location=device)
+        state_dict = checkpoint["state_dict"] if isinstance(checkpoint, dict) and "state_dict" in checkpoint else checkpoint
+        model.load_state_dict(state_dict)
         model = model.to(device)
         model.eval()
-        logger.info("Model loaded successfully.")
+        logger.info("EfficientNet-V2-S model loaded successfully.")
         return model
     except Exception as e:
         logger.error(f"Error loading model weights: {e}")
