@@ -14,11 +14,17 @@ import { ResultCard } from "@/components/ResultCard";
 
 const modelSpecs = [
   { label: "Architecture", value: "EfficientNet-V2-S" },
-  { label: "Parameters", value: "24M" },
-  { label: "Input Resolution", value: "384 × 384" },
-  { label: "Pretrained", value: "ImageNet-21k" },
+  { label: "Parameters", value: "~21M (20,967,252)" },
+  { label: "Input Resolution", value: "224 × 224" },
+  { label: "Pretrained", value: "ImageNet-1K (IMAGENET1K_V1)" },
   { label: "Block Types", value: "Fused-MBConv + MBConv" },
-  { label: "Stages", value: "8 (Conv → FC)" },
+  { label: "Stages", value: "9 (Conv → FC)" },
+  { label: "Optimizer", value: "AdamW (layer-wise LR)" },
+  { label: "Training Epochs", value: "60 (best @ 49)" },
+  { label: "Best Val Accuracy", value: "97.00%" },
+  { label: "Test Accuracy", value: "95.75%" },
+  { label: "Augmentation", value: "Mixup (α=0.4, 50%)" },
+  { label: "Scheduler", value: "CosineAnnealingWR" },
 ];
 
 const tumorClasses = [
@@ -119,7 +125,7 @@ export default function AnalyzerPage() {
             Diagnostic Interface
           </h1>
           <p className="text-sm sm:text-base text-slate-400 max-w-lg font-light leading-relaxed">
-            Upload an axial, coronal, or sagittal brain MRI scan. Our fine-tuned EfficientNet-V2-S model will analyze the tensor features.
+            Upload a brain MRI scan and get instant AI classification powered by EfficientNet-V2-S with <strong className="text-slate-300">95.75% test accuracy</strong>.
           </p>
         </motion.div>
 
@@ -298,7 +304,7 @@ export default function AnalyzerPage() {
                       </div>
 
                       {/* Output classes */}
-                      <div className="bg-black/20 rounded-lg px-3 py-3 border border-white/5">
+                      <div className="bg-black/20 rounded-lg px-3 py-3 border border-white/5 mb-3">
                         <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-2">Output Classes</div>
                         <div className="flex flex-wrap gap-2">
                           {tumorClasses.map((cls) => (
@@ -308,6 +314,16 @@ export default function AnalyzerPage() {
                             </span>
                           ))}
                         </div>
+                      </div>
+
+                      {/* Layer freezing info */}
+                      <div className="bg-black/20 rounded-lg px-3 py-3 border border-white/5">
+                        <div className="text-[9px] text-slate-500 uppercase tracking-wider mb-2">Fine-tuning Strategy</div>
+                        <p className="text-[10px] text-slate-400 leading-relaxed">
+                          Layers <span className="text-cyan-400 font-mono">features.0–4</span> frozen (ImageNet features preserved). 
+                          Layers <span className="text-cyan-400 font-mono">features.5–7</span> + classifier trainable with layer-wise LR scaling.
+                          Total: 91.3% trainable (~19.1M of ~21M params).
+                        </p>
                       </div>
                     </div>
                   </motion.div>
@@ -332,7 +348,7 @@ export default function AnalyzerPage() {
                   <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                 </div>
                 <span className="ml-4 text-[10px] font-mono text-slate-500 tracking-widest">
-                  EfficientNet-V2-S Inference Engine v2.0
+                  EfficientNet-V2-S · ~21M params · 224×224 input
                 </span>
               </div>
 
@@ -351,7 +367,7 @@ export default function AnalyzerPage() {
                         Awaiting Diagnostic Payload
                       </h3>
                       <p className="text-sm max-w-sm text-slate-500 leading-relaxed font-light">
-                        The neural network is idle. Upload a brain MRI scan via the input interface to begin classification.
+                        The neural network is idle. Upload a brain MRI scan via the input interface to begin classification across 4 categories.
                       </p>
                     </motion.div>
                   )}
@@ -375,9 +391,9 @@ export default function AnalyzerPage() {
                         Processing Inference
                       </h3>
                       <div className="space-y-2 mt-4 text-xs font-mono text-cyan-400/60 text-left w-64 bg-black/20 p-3 rounded-lg border border-cyan-500/10">
-                        <p className="animate-pulse">{">"} Resizing input to 384×384...</p>
+                        <p className="animate-pulse">{">"} Resizing input to 224×224...</p>
                         <p className="animate-pulse" style={{ animationDelay: "0.3s" }}>
-                          {">"} Normalizing with ImageNet stats...
+                          {">"} Normalizing with ImageNet-1K stats...
                         </p>
                         <p className="animate-pulse" style={{ animationDelay: "0.6s" }}>
                           {">"} Running Fused-MBConv stages 1–3...

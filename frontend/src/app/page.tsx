@@ -8,7 +8,8 @@ import {
   Layers, Network, Microscope, Github, BookOpen,
   Activity, FileWarning, CheckCircle2, Timer,
   Gauge, Blocks, Focus, GraduationCap, ExternalLink,
-  Scan, FlaskConical
+  Scan, FlaskConical, Shuffle, TrendingUp, Flame,
+  BarChart, Shield, Sparkles, Clock, Binary, Cog
 } from "lucide-react";
 
 import ParticleField from "@/components/ParticleField";
@@ -20,11 +21,11 @@ import ArchitecturePipeline from "@/components/ArchitecturePipeline";
 
 const stats = [
   { value: 4, label: "Tumor Classes" },
-  { value: 24, suffix: "M", label: "Parameters" },
-  { value: 384, suffix: "px", label: "Input Size" },
-  { value: 98, suffix: "%", label: "Accuracy" },
-  { value: 0.5, suffix: "s", label: "Inference", decimals: 1 },
-  { value: 8, label: "Stages" },
+  { value: 21, suffix: "M", label: "Parameters" },
+  { value: 224, suffix: "px", label: "Input Size" },
+  { value: 97, suffix: "%", label: "Val Accuracy" },
+  { value: 95.75, suffix: "%", label: "Test Accuracy", decimals: 2 },
+  { value: 9, label: "Stages" },
 ];
 
 const steps = [
@@ -39,14 +40,14 @@ const steps = [
     num: "02",
     icon: Cpu,
     title: "AI Analysis",
-    description: "Our fine-tuned EfficientNet-V2-S model normalizes the tensor and runs inference through Fused-MBConv and MBConv layers.",
+    description: "Our fine-tuned EfficientNet-V2-S model resizes to 224×224, normalizes the tensor, and runs inference through Fused-MBConv and MBConv layers.",
     color: "blue",
   },
   {
     num: "03",
     icon: BarChart3,
     title: "Get Results",
-    description: "Receive instant classification results with confidence scores across all 4 categories, downloadable as a report.",
+    description: "Receive instant classification with Softmax confidence scores across all 4 categories — Glioma, Meningioma, Pituitary, or No Tumor — downloadable as a report.",
     color: "violet",
   },
 ];
@@ -55,25 +56,25 @@ const features = [
   {
     icon: Layers,
     title: "Transfer Learning",
-    description: "Pre-trained on ImageNet-21k's millions of images, then fine-tuned on brain MRI scans for specialized 4-class tumor detection with superior feature representations.",
+    description: "Pre-trained on ImageNet-1K (IMAGENET1K_V1), then fine-tuned on brain MRI scans. 91.3% of the model (~19.1M parameters) is trainable with layer-wise learning rates for optimal feature adaptation.",
     accent: "from-cyan-500/20 to-blue-500/20",
   },
   {
     icon: Database,
     title: "Robust Dataset",
-    description: "Trained on thousands of axial, coronal, and sagittal MRI scans spanning Glioma, Meningioma, Pituitary, and No Tumor classes for comprehensive coverage.",
+    description: "Trained on 5,712 MRI scans across Glioma, Meningioma, Pituitary, and No Tumor classes from the Kaggle Brain Tumor MRI Dataset, validated on 800 samples.",
     accent: "from-blue-500/20 to-violet-500/20",
   },
   {
     icon: Network,
     title: "Fused-MBConv Blocks",
-    description: "Early stages use Fused-MBConv that merges depthwise and pointwise convolutions into a single 3×3 conv — enabling faster training on modern accelerators.",
+    description: "Early stages use Fused-MBConv that merges depthwise and pointwise convolutions into a single 3×3 conv — enabling faster training on modern GPU accelerators like Tesla T4.",
     accent: "from-violet-500/20 to-cyan-500/20",
   },
   {
     icon: Microscope,
     title: "Smart Preprocessing",
-    description: "Images are resized to 384×384, normalized with ImageNet mean & std deviation to match the model's training distribution for optimal inference.",
+    description: "Images are resized to 224×224, normalized with ImageNet mean [0.485, 0.456, 0.406] & std [0.229, 0.224, 0.225] to match the model's training distribution for optimal inference.",
     accent: "from-cyan-500/20 to-emerald-500/20",
   },
   {
@@ -83,11 +84,53 @@ const features = [
     accent: "from-emerald-500/20 to-blue-500/20",
   },
   {
-    icon: GraduationCap,
-    title: "Progressive Learning",
-    description: "Training starts with smaller 128px images and weaker regularization, gradually scaling to 384px with stronger augmentation — yielding faster convergence and higher accuracy.",
+    icon: Shuffle,
+    title: "Mixup Augmentation",
+    description: "Training uses Mixup data augmentation 50% of the time (α=0.4), blending image pairs and their labels to improve generalization and reduce overfitting on medical data.",
     accent: "from-blue-500/20 to-violet-500/20",
   },
+];
+
+const trainingTechniques = [
+  {
+    icon: Cog,
+    title: "AdamW Optimizer",
+    simpleTip: "A smart learning algorithm that adjusts how much each part of the model changes during training.",
+    techDetail: "AdamW with layer-wise learning rates: features.5 at 0.05× base, features.6 at 0.2×, features.7 at 0.5×, classifier head at full 2e-4 base LR. Weight decay: 2e-4.",
+    accent: "from-cyan-500/10 to-blue-500/10",
+    borderColor: "border-cyan-500/20",
+  },
+  {
+    icon: TrendingUp,
+    title: "Cosine Annealing Scheduler",
+    simpleTip: "Gradually reduces the learning speed in waves, helping the model settle into better solutions.",
+    techDetail: "CosineAnnealingWarmRestarts with T_0=10, T_mult=2, eta_min=1e-7. Periodic warm restarts prevent stagnation and help escape local minima.",
+    accent: "from-blue-500/10 to-violet-500/10",
+    borderColor: "border-blue-500/20",
+  },
+  {
+    icon: Shield,
+    title: "Label Smoothing",
+    simpleTip: "Makes the model less overconfident by softening the target labels slightly.",
+    techDetail: "CrossEntropyLoss with label_smoothing=0.1. Instead of hard 0/1 targets, uses 0.025/0.925 distribution, reducing overconfidence and improving calibration.",
+    accent: "from-violet-500/10 to-emerald-500/10",
+    borderColor: "border-violet-500/20",
+  },
+  {
+    icon: Flame,
+    title: "Heavy Augmentation Pipeline",
+    simpleTip: "Applies random transformations (flips, rotations, color changes) to training images so the model learns to handle real-world variations.",
+    techDetail: "RandomCrop(224), HorizontalFlip, VerticalFlip(p=0.2), Rotation(20°), ColorJitter, RandomAffine(shear=8), Grayscale(p=0.1), RandAugment(ops=2, mag=9), RandomErasing(p=0.25).",
+    accent: "from-emerald-500/10 to-cyan-500/10",
+    borderColor: "border-emerald-500/20",
+  },
+];
+
+const classificationReport = [
+  { name: "Pituitary", precision: 0.96, recall: 1.00, f1: 0.98, support: 196, color: "violet" },
+  { name: "No Tumor", precision: 1.00, recall: 0.84, f1: 0.91, support: 202, color: "emerald" },
+  { name: "Meningioma", precision: 0.90, recall: 1.00, f1: 0.95, support: 214, color: "amber" },
+  { name: "Glioma", precision: 0.99, recall: 0.99, f1: 0.99, support: 188, color: "red" },
 ];
 
 const tumorClasses: TumorClass[] = [
@@ -102,8 +145,8 @@ const tumorClasses: TumorClass[] = [
     stats: [
       { label: "Origin", value: "Glial Cells" },
       { label: "Growth", value: "Infiltrative" },
-      { label: "Prevalence", value: "~30%  of brain tumors" },
-      { label: "Subtypes", value: "Astrocytoma, GBM" },
+      { label: "Prevalence", value: "~30% of brain tumors" },
+      { label: "F1 Score", value: "0.99" },
     ],
   },
   {
@@ -117,8 +160,8 @@ const tumorClasses: TumorClass[] = [
     stats: [
       { label: "Origin", value: "Meninges" },
       { label: "Growth", value: "Slow-growing" },
-      { label: "Prevalence", value: "~37%  of brain tumors" },
-      { label: "Prognosis", value: "Generally good" },
+      { label: "Prevalence", value: "~37% of brain tumors" },
+      { label: "F1 Score", value: "0.95" },
     ],
   },
   {
@@ -132,8 +175,8 @@ const tumorClasses: TumorClass[] = [
     stats: [
       { label: "Origin", value: "Pituitary Gland" },
       { label: "Growth", value: "Variable" },
-      { label: "Prevalence", value: "~15%  of brain tumors" },
-      { label: "Effects", value: "Hormonal changes" },
+      { label: "Prevalence", value: "~15% of brain tumors" },
+      { label: "F1 Score", value: "0.98" },
     ],
   },
   {
@@ -147,8 +190,8 @@ const tumorClasses: TumorClass[] = [
     stats: [
       { label: "Status", value: "Healthy" },
       { label: "Action", value: "Routine follow-up" },
-      { label: "Confidence", value: "Softmax output" },
-      { label: "Verification", value: "Always advised" },
+      { label: "Precision", value: "100%" },
+      { label: "F1 Score", value: "0.91" },
     ],
   },
 ];
@@ -188,10 +231,20 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs sm:text-sm font-medium"
+              className="flex flex-wrap items-center justify-center gap-2 mb-8"
             >
-              <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-              Powered by EfficientNet-V2-S · 24M Parameters
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs sm:text-sm font-medium">
+                <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                EfficientNet-V2-S
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs sm:text-sm font-medium">
+                <div className="w-2 h-2 rotate-45 bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                ~21M Parameters
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs sm:text-sm font-medium">
+                <div className="w-2 h-2 rounded-sm bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                97% Accuracy
+              </span>
             </motion.div>
 
             {/* Headline */}
@@ -205,8 +258,10 @@ export default function Home() {
             <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
               An end-to-end AI pipeline engineered to classify brain MRI scans across 4 categories 
               using a fine-tuned <strong className="text-slate-300">EfficientNet-V2-S</strong> architecture with{" "}
-              <strong className="text-slate-300">Fused-MBConv</strong> blocks and{" "}
-              <strong className="text-slate-300">progressive learning</strong>.
+              <strong className="text-slate-300">Fused-MBConv</strong> blocks,{" "}
+              <strong className="text-slate-300">Mixup augmentation</strong>, and{" "}
+              <strong className="text-slate-300">Cosine Annealing</strong> scheduling — achieving{" "}
+              <strong className="text-cyan-400">95.75% test accuracy</strong>.
             </p>
 
             {/* CTA Buttons */}
@@ -230,13 +285,13 @@ export default function Home() {
                 GitHub
               </a>
               <a
-                href="https://www.kaggle.com/code/jaypatel345/master-cardiovascular-disease-prediction"
+                href="https://www.kaggle.com/code/jaypatel345/braintumorcnn-new"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white rounded-xl text-base font-semibold transition-all duration-300 border border-white/10 hover:border-white/20"
               >
                 <BookOpen className="w-5 h-5" />
-                Kaggle
+                Kaggle Notebook
               </a>
             </div>
           </motion.div>
@@ -268,7 +323,7 @@ export default function Home() {
       </section>
 
       {/* ─── How It Works ─── */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
+      <section className="relative py-10 sm:py-14 overflow-hidden">
         <div className="hero-glow -top-40 -left-40 opacity-30" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -321,7 +376,7 @@ export default function Home() {
       </section>
 
       {/* ─── Tumor Classes ─── */}
-      <section className="relative py-20 sm:py-28 bg-slate-950/40 border-y border-white/5">
+      <section className="relative py-10 sm:py-14 bg-slate-950/40 border-y border-white/5">
         <div className="hero-glow top-1/4 right-0 opacity-20" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -338,11 +393,11 @@ export default function Home() {
               What We Detect
             </motion.h2>
             <motion.p variants={itemVariants} className="text-slate-400 max-w-2xl mx-auto text-base sm:text-lg font-light">
-              Our model classifies brain MRI scans into 4 distinct categories. Learn about each tumor type, its origin, and clinical significance.
+              Our model classifies brain MRI scans into 4 distinct categories with an overall <strong className="text-cyan-400">95.75% test accuracy</strong> and weighted F1-score of <strong className="text-cyan-400">0.96</strong>.
             </motion.p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
             {tumorClasses.map((tumor, i) => (
               <TumorClassCard key={tumor.title} tumor={tumor} index={i} />
             ))}
@@ -351,7 +406,7 @@ export default function Home() {
       </section>
 
       {/* ─── Model Architecture Features ─── */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
+      <section className="relative py-10 sm:py-14 overflow-hidden">
         <div className="hero-glow bottom-0 right-0 opacity-20" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -368,7 +423,7 @@ export default function Home() {
               Under the Hood
             </motion.h2>
             <motion.p variants={itemVariants} className="text-slate-400 max-w-xl mx-auto text-base sm:text-lg font-light">
-              A deep dive into the EfficientNet-V2-S model powering NeuralScan.AI — built with training-aware NAS and progressive learning.
+              A deep dive into the EfficientNet-V2-S model powering NeuralScan.AI — pre-trained on ImageNet-1K and fine-tuned with advanced training techniques.
             </motion.p>
           </motion.div>
 
@@ -409,7 +464,7 @@ export default function Home() {
               <div>
                 <h4 className="text-base font-semibold text-slate-100 mb-2">Preprocessing Pipeline</h4>
                 <p className="text-sm text-slate-400 font-light leading-relaxed">
-                  All uploaded scans are resized to <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">384×384</code>, 
+                  All uploaded scans are resized to <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">224×224</code>, 
                   converted to PyTorch Tensors, and normalized using ImageNet mean 
                   <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">[0.485, 0.456, 0.406]</code> and std 
                   <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">[0.229, 0.224, 0.225]</code> to match the training distribution.
@@ -420,8 +475,188 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── Training Methodology ─── */}
+      <section className="relative py-10 sm:py-14 bg-slate-950/40 border-y border-white/5 overflow-hidden">
+        <div className="hero-glow top-0 left-1/4 opacity-20" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-16"
+          >
+            <motion.span variants={itemVariants} className="text-cyan-400 text-sm font-semibold uppercase tracking-widest mb-3 block">
+              Training
+            </motion.span>
+            <motion.h2 variants={itemVariants} className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-100 mb-4">
+              How the Model Learns
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-slate-400 max-w-2xl mx-auto text-base sm:text-lg font-light">
+              Advanced training techniques that help our model achieve <strong className="text-cyan-400">97% validation accuracy</strong> in just 60 epochs — explained for everyone.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6"
+          >
+            {trainingTechniques.map((tech, i) => (
+              <motion.div
+                key={i}
+                variants={itemVariants}
+                className="glass-card card-hover-lift rounded-2xl overflow-hidden group"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${tech.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                <div className="relative z-10 p-6 sm:p-7">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className={`w-11 h-11 flex-shrink-0 rounded-xl ${tech.borderColor} border flex items-center justify-center bg-gradient-to-br ${tech.accent} group-hover:scale-110 transition-transform duration-300`}>
+                      <tech.icon className="w-5 h-5 text-cyan-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-slate-100 mb-1">{tech.title}</h3>
+                      <p className="text-sm text-slate-400 font-light leading-relaxed">
+                        <span className="inline-flex items-center gap-1 text-emerald-400/80 text-xs font-medium">
+                          <Sparkles className="w-3 h-3" /> Simple:
+                        </span>{" "}
+                        {tech.simpleTip}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-black/20 rounded-xl p-3 border border-white/5">
+                    <p className="text-xs text-slate-500 font-mono leading-relaxed">
+                      <span className="text-cyan-400/70 font-semibold">Technical:</span> {tech.techDetail}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Training summary callout */}
+          <motion.div
+            variants={itemVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mt-8 glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden"
+          >
+            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-emerald-400 to-cyan-500" />
+            <div className="flex flex-col sm:flex-row gap-4 items-start">
+              <GraduationCap className="w-8 h-8 text-emerald-400 flex-shrink-0 mt-1" />
+              <div>
+                <h4 className="text-base font-semibold text-slate-100 mb-2">Training Summary</h4>
+                <p className="text-sm text-slate-400 font-light leading-relaxed">
+                  The model was trained for <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">60 epochs</code> on an{" "}
+                  <code className="text-cyan-400/80 bg-cyan-500/10 px-1.5 py-0.5 rounded text-xs">NVIDIA Tesla T4 GPU</code> with batch size 32 and early stopping patience of 20 epochs.
+                  The best model checkpoint was saved at epoch 49 with{" "}
+                  <code className="text-emerald-400/80 bg-emerald-500/10 px-1.5 py-0.5 rounded text-xs">97.00% validation accuracy</code>. 
+                  Gradient clipping (max_norm=1.0) was used to stabilize training.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── Model Performance ─── */}
+      <section className="relative py-10 sm:py-14 overflow-hidden">
+        <div className="hero-glow bottom-0 left-0 opacity-20" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-16"
+          >
+            <motion.span variants={itemVariants} className="text-cyan-400 text-sm font-semibold uppercase tracking-widest mb-3 block">
+              Results
+            </motion.span>
+            <motion.h2 variants={itemVariants} className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-100 mb-4">
+              Model Performance
+            </motion.h2>
+            <motion.p variants={itemVariants} className="text-slate-400 max-w-2xl mx-auto text-base sm:text-lg font-light">
+              Detailed per-class metrics from the test set of 800 MRI scans — showing precision, recall, and F1-score for each tumor category.
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="glass-card rounded-2xl overflow-hidden"
+          >
+            {/* Table header */}
+            <div className="grid grid-cols-5 gap-2 px-5 sm:px-6 py-4 bg-black/30 border-b border-white/5 text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider font-semibold">
+              <div>Class</div>
+              <div className="text-center">Precision</div>
+              <div className="text-center">Recall</div>
+              <div className="text-center">F1-Score</div>
+              <div className="text-center">Samples</div>
+            </div>
+            {/* Rows */}
+            {classificationReport.map((row, i) => (
+              <motion.div
+                key={row.name}
+                variants={itemVariants}
+                className={`grid grid-cols-5 gap-2 px-5 sm:px-6 py-4 items-center transition-colors hover:bg-white/[0.02] ${i < classificationReport.length - 1 ? "border-b border-white/5" : ""}`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full bg-${row.color}-400`} />
+                  <span className="text-sm font-medium text-slate-200">{row.name}</span>
+                </div>
+                <div className="text-center text-sm font-mono text-slate-300">{row.precision.toFixed(2)}</div>
+                <div className="text-center text-sm font-mono text-slate-300">{row.recall.toFixed(2)}</div>
+                <div className={`text-center text-sm font-mono font-bold text-${row.color}-400`}>{row.f1.toFixed(2)}</div>
+                <div className="text-center text-sm font-mono text-slate-500">{row.support}</div>
+              </motion.div>
+            ))}
+            {/* Summary row */}
+            <div className="grid grid-cols-5 gap-2 px-5 sm:px-6 py-4 bg-cyan-500/5 border-t border-cyan-500/15">
+              <div className="text-sm font-semibold text-cyan-300">Overall</div>
+              <div className="text-center text-sm font-mono font-bold text-cyan-400">0.96</div>
+              <div className="text-center text-sm font-mono font-bold text-cyan-400">0.96</div>
+              <div className="text-center text-sm font-mono font-bold text-cyan-400">0.96</div>
+              <div className="text-center text-sm font-mono text-slate-400">800</div>
+            </div>
+          </motion.div>
+
+          {/* Quick interpretation for normal users */}
+          <motion.div
+            variants={itemVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4"
+          >
+            {[
+              { icon: BarChart, label: "What is Precision?", detail: "Out of all scans the AI labeled as a certain tumor type, how many were actually correct. Higher = fewer false alarms." },
+              { icon: Scan, label: "What is Recall?", detail: "Out of all actual cases of a tumor type, how many did the AI successfully find. Higher = fewer missed tumors." },
+              { icon: Binary, label: "What is F1-Score?", detail: "A balanced combination of Precision and Recall. Ranges from 0 to 1 — our model scores 0.96 overall, meaning excellent performance." },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                variants={itemVariants}
+                className="glass-card rounded-xl p-5 flex items-start gap-3 group hover:border-emerald-500/20 transition-colors"
+              >
+                <item.icon className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-200 mb-1">{item.label}</h4>
+                  <p className="text-xs text-slate-500 font-light leading-relaxed">{item.detail}</p>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
       {/* ─── Architecture Pipeline ─── */}
-      <section className="relative py-20 sm:py-28 bg-slate-950/40 border-y border-white/5 overflow-hidden">
+      <section className="relative py-10 sm:py-14 bg-slate-950/40 border-y border-white/5 overflow-hidden">
         <div className="hero-glow top-0 left-1/3 opacity-20" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -438,7 +673,7 @@ export default function Home() {
               Stage-by-Stage Architecture
             </motion.h2>
             <motion.p variants={itemVariants} className="text-slate-400 max-w-2xl mx-auto text-base sm:text-lg font-light">
-              Visualize the EfficientNet-V2-S inference pipeline — from input convolution through Fused-MBConv and MBConv stages to final classification.
+              Visualize the EfficientNet-V2-S inference pipeline — from 224×224 input convolution through Fused-MBConv and MBConv stages to final 4-class classification.
             </motion.p>
           </motion.div>
 
@@ -453,9 +688,9 @@ export default function Home() {
             className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10"
           >
             {[
-              { icon: Blocks, label: "Only 3×3 Filters", detail: "No 5×5 convolutions — faster on modern accelerators" },
+              { icon: Blocks, label: "Only 3×3 Filters", detail: "No 5×5 convolutions — faster on modern GPU accelerators like NVIDIA Tesla T4" },
               { icon: Gauge, label: "Training-Aware NAS", detail: "Architecture discovered via neural architecture search optimizing both accuracy and training speed" },
-              { icon: Timer, label: "5× Faster Training", detail: "Up to 5× faster training than EfficientNet-V1 while achieving better accuracy on ImageNet" },
+              { icon: Timer, label: "91.3% Trainable", detail: "Fine-tuned ~19.1M of ~21M total parameters, with lower layers frozen to preserve ImageNet features" },
             ].map((fact, i) => (
               <motion.div
                 key={i}
@@ -501,8 +736,9 @@ export default function Home() {
                     <strong className="text-slate-300">Mingxing Tan & Quoc V. Le</strong> — Google Research, Brain Team
                   </p>
                   <p className="text-xs text-slate-500 mb-4 font-light leading-relaxed">
-                    Published at ICML 2021. Introduces training-aware NAS, progressive learning, and the Fused-MBConv block — achieving 
+                    Published at ICML 2021. Introduces training-aware NAS, and the Fused-MBConv block — achieving 
                     state-of-the-art accuracy on ImageNet while training up to 11× faster than previous models.
+                    Our implementation uses the EfficientNet-V2-S variant with custom classifier head for 4-class brain tumor detection.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <a
@@ -532,7 +768,7 @@ export default function Home() {
       </section>
 
       {/* ─── Warnings & Disclaimer ─── */}
-      <section className="relative py-20 sm:py-28 bg-slate-950/40 border-y border-white/5">
+      <section className="relative py-10 sm:py-14 bg-slate-950/40 border-y border-white/5">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -553,16 +789,17 @@ export default function Home() {
                 <div>
                   <strong className="block text-orange-300 font-semibold mb-1">Not a Substitute for Medical Advice</strong>
                   <p className="text-sm text-orange-200/70 leading-relaxed">
-                    NeuralScan.AI is an experimental research tool. Predictions should NEVER be the sole basis for clinical diagnosis.
+                    NeuralScan.AI is an experimental research tool. Predictions should NEVER be the sole basis for clinical diagnosis. Always consult a qualified radiologist.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 {[
-                  { title: "False Positives & Negatives", text: "ML models are probabilistic. The model may predict a tumor where none exists, or fail to detect one." },
-                  { title: "Image Quality Dependency", text: "Accuracy depends on clarity, angle, and modality. Blurry or non-MRI images produce unpredictable results." },
-                  { title: "Data Shift", text: "The model is constrained by its training data. Rare tumor types or artifacts not in the dataset may misguide it." },
+                  { title: "False Positives & Negatives", text: "ML models are probabilistic. The model may predict a tumor where none exists, or fail to detect one. The test accuracy is 95.75% — not perfect." },
+                  { title: "Image Quality Dependency", text: "Accuracy depends on clarity, angle, and modality. Blurry or non-MRI images produce unpredictable results. Best results with axial brain MRI scans." },
+                  { title: "Data Shift", text: "The model was trained on the Kaggle Brain Tumor MRI Dataset. Rare tumor types, different scanner equipment, or imaging artifacts not in the training data may misguide predictions." },
+                  { title: "No Tumor Class Recall", text: "The 'No Tumor' class has 84% recall — meaning 16% of healthy scans may be incorrectly flagged as having a tumor. Always verify with a specialist." },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <AlertTriangle className="w-4 h-4 text-orange-500/60 flex-shrink-0 mt-1" />
@@ -579,7 +816,7 @@ export default function Home() {
       </section>
 
       {/* ─── Final CTA ─── */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
+      <section className="relative py-10 sm:py-14 overflow-hidden">
         <div className="hero-glow top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-40" />
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -593,7 +830,7 @@ export default function Home() {
               Ready to Analyze?
             </h2>
             <p className="text-slate-400 text-base sm:text-lg mb-8 font-light max-w-lg mx-auto">
-              Upload your brain MRI scan and let our EfficientNet-V2-S model provide instant classification results with confidence scores.
+              Upload your brain MRI scan and let our fine-tuned EfficientNet-V2-S model provide instant classification results with confidence scores.
             </p>
             <Link
               href="/analyzer"

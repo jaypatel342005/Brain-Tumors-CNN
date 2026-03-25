@@ -6,7 +6,8 @@ import {
   Github, Linkedin, ExternalLink, Mail,
   Code2, Brain, Database, Globe, Smartphone,
   ChevronRight, Zap, FlaskConical, Target,
-  HeartPulse, Microscope, Layers
+  HeartPulse, Microscope, Layers, Shuffle,
+  TrendingUp, BarChart3, BookOpen
 } from "lucide-react";
 
 const skills = [
@@ -31,7 +32,7 @@ const skills = [
 const projects = [
   {
     title: "Brain Tumor Detection (This Project)",
-    description: "Deep learning MRI classifier using fine-tuned EfficientNet-V2-S with Next.js frontend and PyTorch backend.",
+    description: "Deep learning MRI classifier using fine-tuned EfficientNet-V2-S (~21M params, 95.75% test accuracy) with Next.js frontend and PyTorch backend.",
     tags: ["PyTorch", "EfficientNet-V2-S", "Next.js", "Deep Learning"],
     url: "https://github.com/jaypatel342005/DL-Project",
     accent: "cyan",
@@ -101,15 +102,15 @@ const projectHighlights = [
   {
     icon: Layers,
     title: "EfficientNet-V2-S Advantage",
-    description: "With 24M parameters, Fused-MBConv blocks, and progressive learning, EfficientNet-V2-S trains 5× faster than its predecessor while achieving superior ImageNet accuracy.",
+    description: "With ~21M parameters and Fused-MBConv blocks, EfficientNet-V2-S trains faster than its predecessor while achieving superior ImageNet accuracy. Our fine-tuned model reaches 97% validation accuracy.",
     accent: "from-cyan-500/10 to-blue-500/10",
     borderColor: "border-cyan-500/20",
     iconColor: "text-cyan-400",
   },
   {
-    icon: Database,
-    title: "Training Dataset",
-    description: "Trained on thousands of brain MRI scans across 4 classes — Glioma, Meningioma, Pituitary, and No Tumor — using axial, coronal, and sagittal views for robust generalization.",
+    icon: Shuffle,
+    title: "Advanced Training Techniques",
+    description: "Trained with Mixup augmentation (α=0.4), AdamW optimizer with layer-wise learning rates, CosineAnnealingWarmRestarts scheduler, and label smoothing (0.1) — achieving 95.75% on the test set.",
     accent: "from-violet-500/10 to-purple-500/10",
     borderColor: "border-violet-500/20",
     iconColor: "text-violet-400",
@@ -117,11 +118,20 @@ const projectHighlights = [
   {
     icon: Target,
     title: "End-to-End Pipeline",
-    description: "From image preprocessing (384×384 resize + ImageNet normalization) through inference to Softmax probability output — a complete, production-ready classification system.",
+    description: "From image preprocessing (224×224 resize + ImageNet-1K normalization) through inference to Softmax probability output — a complete, production-ready classification system.",
     accent: "from-emerald-500/10 to-green-500/10",
     borderColor: "border-emerald-500/20",
     iconColor: "text-emerald-400",
   },
+];
+
+const modelFacts = [
+  { icon: Brain, label: "Architecture", value: "EfficientNet-V2-S", detail: "Pre-trained on ImageNet-1K" },
+  { icon: BarChart3, label: "Parameters", value: "~21M (20,967,252)", detail: "91.3% trainable" },
+  { icon: Target, label: "Test Accuracy", value: "95.75%", detail: "800 test samples" },
+  { icon: TrendingUp, label: "Val Accuracy", value: "97.00%", detail: "Best at epoch 49" },
+  { icon: Microscope, label: "Input Size", value: "224 × 224", detail: "RGB normalized" },
+  { icon: Database, label: "Dataset", value: "5,712 train / 800 test", detail: "4 tumor classes" },
 ];
 
 const containerVariants: Variants = {
@@ -138,7 +148,7 @@ export default function AboutPage() {
   return (
     <div className="bg-grid-pattern">
       {/* ─── Project Mission ─── */}
-      <section className="relative py-20 sm:py-28 overflow-hidden border-b border-white/5">
+      <section className="relative py-10 sm:py-14 overflow-hidden border-b border-white/5">
         <div className="hero-glow top-0 right-1/4 opacity-25" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
@@ -161,7 +171,8 @@ export default function AboutPage() {
                 About NeuralScan.AI
               </h1>
               <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed font-light">
-                An AI-powered brain tumor classification system built with state-of-the-art deep learning architecture.
+                An AI-powered brain tumor classification system built with state-of-the-art deep learning — achieving{" "}
+                <strong className="text-cyan-400">95.75% test accuracy</strong>.
                 Trained to detect <strong className="text-slate-300">Glioma</strong>, <strong className="text-slate-300">Meningioma</strong>,{" "}
                 <strong className="text-slate-300">Pituitary Tumors</strong>, and identify{" "}
                 <strong className="text-slate-300">Healthy Scans</strong> from brain MRI images.
@@ -220,13 +231,58 @@ export default function AboutPage() {
                 <FlaskConical className="w-4 h-4" />
                 Research Paper
               </a>
+              <a
+                href="https://www.kaggle.com/code/jaypatel345/braintumorcnn-new"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-2.5 bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white rounded-xl text-sm font-semibold transition-all duration-300 border border-white/10 hover:border-white/20"
+              >
+                <BookOpen className="w-4 h-4" />
+                Kaggle Notebook
+              </a>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ─── Model Facts Grid ─── */}
+      <section className="py-10 sm:py-14 border-b border-white/5 bg-slate-950/30">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+          >
+            <motion.div variants={itemVariants} className="text-center mb-12">
+              <span className="text-cyan-400 text-sm font-semibold uppercase tracking-widest mb-3 block">Model Overview</span>
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-100 mb-3">Key Metrics at a Glance</h2>
+              <p className="text-slate-400 font-light">Everything you need to know about the model powering NeuralScan.AI</p>
+            </motion.div>
+
+            <motion.div
+              variants={containerVariants}
+              className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5"
+            >
+              {modelFacts.map((fact) => (
+                <motion.div
+                  key={fact.label}
+                  variants={itemVariants}
+                  className="glass-card card-hover-lift rounded-2xl p-5 sm:p-6 text-center group"
+                >
+                  <fact.icon className="w-6 h-6 text-cyan-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                  <div className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">{fact.label}</div>
+                  <div className="text-lg sm:text-xl font-bold text-slate-100 mb-1">{fact.value}</div>
+                  <div className="text-xs text-slate-500 font-light">{fact.detail}</div>
+                </motion.div>
+              ))}
             </motion.div>
           </motion.div>
         </div>
       </section>
 
       {/* ─── Hero (Developer) ─── */}
-      <section className="relative py-20 sm:py-28 overflow-hidden">
+      <section className="relative py-10 sm:py-14 overflow-hidden">
         <div className="hero-glow top-0 left-1/4 opacity-30" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
@@ -267,7 +323,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── Technical Arsenal ─── */}
-      <section className="py-16 sm:py-24 border-y border-white/5 bg-slate-950/30">
+      <section className="py-10 sm:py-14 border-y border-white/5 bg-slate-950/30">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -304,7 +360,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── Featured Projects ─── */}
-      <section className="py-16 sm:py-24">
+      <section className="py-10 sm:py-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
